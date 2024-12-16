@@ -1,5 +1,9 @@
 ﻿using MediatR;
 using Microsoft.AspNetCore.Mvc;
+using MoviesApp.Application.Movies.Commands.CreateMovie;
+using MoviesApp.Application.Movies.Commands.UpdateMovie;
+using MoviesApp.Application.Movies.Queries.GetAll;
+using MoviesApp.Application.Movies.Queries.GetMovieById;
 
 namespace MoviesApp.API.Controllers
 {
@@ -9,8 +13,35 @@ namespace MoviesApp.API.Controllers
     {
         private readonly IMediator _mediator;
         public MoviesController(IMediator mediator)
+            => _mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
+
+        [HttpGet("/Movies")]
+        public async Task<ActionResult> GetMovies()
+            => Ok(await _mediator.Send(new GetMoviesQuery()));
+
+        [HttpGet("/Movie/{id}")]
+        public async Task<ActionResult> GetMovieById([FromRoute] int id)
         {
-            _mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
+            var movie = await _mediator.Send(new GetMovieByIdQuery(id));
+
+            if (movie == null)
+            {
+                return NotFound();
+            }
+
+            return Ok(movie);
         }
+
+        [HttpPost("/Create")]
+        public async Task<ActionResult> CreateMovie([FromBody] CreateMovieCommand command)
+        {
+            var newMovieId = await _mediator.Send(command);
+
+            return Created($"/CreateMovie/{newMovieId}", newMovieId);
+        }
+
+        [HttpPut("/Update")]
+        public async Task<ActionResult> UpdateMovie([FromBody] UpdateMovieCommand command)
+            => Ok(await _mediator.Send(command));
     }
 }
