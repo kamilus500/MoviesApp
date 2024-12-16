@@ -7,16 +7,12 @@ using MoviesApp.Infrastructure.Global;
 
 namespace MoviesApp.Application.Movies.Queries.GetAll
 {
-    public class GetMoviesQueryHandler : IRequestHandler<GetMoviesQuery, IEnumerable<Movie>>
+    public class GetMoviesQueryHandler : BaseHandler<GetMoviesQueryHandler>, IRequestHandler<GetMoviesQuery, IEnumerable<Movie>>
     {
-        private readonly IMoviesRepository _moviesRepository;
-        private readonly IMemoryCache _memoryCache;
-        private readonly ILogger<GetMoviesQueryHandler> _logger;
-        public GetMoviesQueryHandler(IMoviesRepository moviesRepository, IMemoryCache memoryCache, ILogger<GetMoviesQueryHandler> logger)
+        public GetMoviesQueryHandler(IMoviesRepository moviesRepository, 
+            IMemoryCache memoryCache, 
+            ILogger<GetMoviesQueryHandler> logger) : base(moviesRepository, memoryCache, logger)
         {
-            _moviesRepository = moviesRepository ?? throw new ArgumentNullException(nameof(moviesRepository));
-            _memoryCache = memoryCache ?? throw new ArgumentNullException(nameof(memoryCache));
-            _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
 
         public async Task<IEnumerable<Movie>> Handle(GetMoviesQuery request, CancellationToken cancellationToken)

@@ -6,16 +6,12 @@ using MoviesApp.Infrastructure.Global;
 
 namespace MoviesApp.Application.Movies.Commands.DeleteMovie
 {
-    public class DeleteMovieCommandHandler : IRequestHandler<DeleteMovieCommand>
+    public class DeleteMovieCommandHandler : BaseHandler<DeleteMovieCommandHandler>, IRequestHandler<DeleteMovieCommand>
     {
-        private readonly IMemoryCache _memoryCache;
-        private readonly IMoviesRepository _moviesRepository;
-        private readonly ILogger<DeleteMovieCommandHandler> _logger;
-        public DeleteMovieCommandHandler(IMoviesRepository moviesRepository, IMemoryCache memoryCache, ILogger<DeleteMovieCommandHandler> logger)
+        public DeleteMovieCommandHandler(IMoviesRepository moviesRepository, 
+            IMemoryCache memoryCache,
+            ILogger<DeleteMovieCommandHandler> logger) : base(moviesRepository, memoryCache, logger)
         {
-            _memoryCache = memoryCache ?? throw new ArgumentNullException(nameof(memoryCache));
-            _moviesRepository = moviesRepository ?? throw new ArgumentNullException(nameof(moviesRepository));
-            _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
 
         public async Task Handle(DeleteMovieCommand request, CancellationToken cancellationToken)
