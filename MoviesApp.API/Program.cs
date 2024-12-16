@@ -3,7 +3,7 @@ using MoviesApp.Infrastructure.Extensions;
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Services.AddInfrastructure(builder.Configuration);
+builder.Services.AddInfrastructure(builder.Configuration, builder.Host);
 builder.Services.AddApplication();
 
 builder.Services.AddControllers();
