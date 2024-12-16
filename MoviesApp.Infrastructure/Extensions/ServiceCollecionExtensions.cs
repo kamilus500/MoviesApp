@@ -15,6 +15,8 @@ namespace MoviesApp.Infrastructure.Extensions
 
             services.AddDbContext<ApplicationDbContext>(options => options.UseSqlServer(connectionString));
 
+            services.AddMemoryCache();
+
             services.AddTransient<IMoviesRepository, MoviesRepository>();
         }
     }

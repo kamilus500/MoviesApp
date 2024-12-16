@@ -1,6 +1,7 @@
 ﻿using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using MoviesApp.Application.Movies.Commands.CreateMovie;
+using MoviesApp.Application.Movies.Commands.DeleteMovie;
 using MoviesApp.Application.Movies.Commands.UpdateMovie;
 using MoviesApp.Application.Movies.Queries.GetAll;
 using MoviesApp.Application.Movies.Queries.GetMovieById;
@@ -43,5 +44,12 @@ namespace MoviesApp.API.Controllers
         [HttpPut("/Update")]
         public async Task<ActionResult> UpdateMovie([FromBody] UpdateMovieCommand command)
             => Ok(await _mediator.Send(command));
+
+        [HttpDelete("/Remove/{id}")]
+        public async Task<ActionResult> RemoveMovie([FromRoute] int id)
+        {
+            await _mediator.Send(new DeleteMovieCommand(id));
+            return NoContent();
+        }
     }
 }

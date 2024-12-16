@@ -1,8 +1,11 @@
 ﻿using FluentValidation;
 using FluentValidation.AspNetCore;
 using Mapster;
+using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.DependencyInjection;
 using MoviesApp.Application.Mapper;
+using MoviesApp.Application.Middlewares;
 using MoviesApp.Application.Movies.Commands.CreateMovie;
 
 namespace MoviesApp.Application.Extensions
@@ -20,6 +23,11 @@ namespace MoviesApp.Application.Extensions
             services.AddValidatorsFromAssemblyContaining<CreateMovieCommandValidator>()
                 .AddFluentValidationAutoValidation()
                 .AddFluentValidationClientsideAdapters();
+        }
+
+        public static void AddMiddlewares(this IApplicationBuilder app)
+        {
+            app.UseMiddleware<ErrorHandlingMiddleware>();
         }
     }
 }
