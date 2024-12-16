@@ -26,6 +26,16 @@ namespace MoviesApp.Infrastructure.Extensions
 
             services.AddDbContext<ApplicationDbContext>(options => options.UseSqlServer(connectionString));
 
+            services.AddCors(options =>
+            {
+                options.AddPolicy("DevPolicy", builder =>
+                {
+                    builder.WithOrigins("http://localhost:8080")
+                           .AllowAnyHeader()
+                           .AllowAnyMethod();
+                });
+            });
+
             services.AddMemoryCache();
 
             services.AddTransient<IMoviesRepository, MoviesRepository>();
