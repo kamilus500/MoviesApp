@@ -1,6 +1,9 @@
 <template>
   <div class="container">
-    <button @click="downloadNewMovies" class="btn btn-success">Download</button>
+    <div class="container-buttons">
+      <button @click="downloadNewMovies" class="btn btn-success">Download</button>
+      <button @click="openCreateDialog" class="btn btn-warning">Create</button>
+    </div>
     <table v-if="movies.length > 0" class="table table-striped table-bordered">
       <thead class="table-dark">
         <tr>
@@ -37,17 +40,32 @@
         <button class="btn btn-danger" @click="closeRemoveDialog">Cancel</button>
       </div>
   </div>
+
+  <dialog v-if="isCreateDialogOpen" class="dialog-backdrop">
+      <div class="dialog">
+        <div class="close-button">
+          <button @click="closeCreateDialog" class="btn btn-danger">Close</button>
+        </div>
+        <CreateMovie @close-createDialog="closeCreateDialog"></CreateMovie>
+      </div>
+  </dialog>
+
 </template>
 
 <script>
 import axios from 'axios';
+import CreateMovie from './CreateMovie.vue';
 
 export default {
   name: 'MoviesTable',
+  components: {
+    CreateMovie
+  },
   data() {
     return {
       selectedMovieId: 0,
       isDeleteDialogOpen: false,
+      isCreateDialogOpen: false,
       movies:  [],
     };
   },
@@ -55,6 +73,13 @@ export default {
     this.fetchMovies();
   },
   methods: {
+    openCreateDialog() {
+      this.isCreateDialogOpen = true;
+    },
+    async closeCreateDialog() {
+      this.isCreateDialogOpen = false;
+      await this.fetchMovies();
+    },
     openRemoveDialog(movieId) {
       this.selectedMovieId = movieId;
       this.isDeleteDialogOpen = true;
@@ -68,7 +93,7 @@ export default {
       await this.fetchMovies();
       this.closeRemoveDialog();
     },
-
+      
     async downloadNewMovies() {
       try {
         await axios.get(`https://localhost:7216/Download`);
@@ -102,13 +127,27 @@ export default {
   align-items: center;
   justify-content: center;
 }
+
 .dialog {
   background: white;
   padding: 20px;
   border-radius: 8px;
   text-align: center;
 }
+
 .dialog button {
   margin: 5px;
+}
+
+.container-buttons {
+  display: flex;
+  justify-content: start;
+  gap: 1rem;
+  margin-bottom: 0.5rem;
+}
+
+.close-button {
+  display: flex;
+  justify-content: end;
 }
 </style>
