@@ -1,7 +1,9 @@
 ﻿using MediatR;
 using Microsoft.AspNetCore.Mvc;
+using MoviesApp.Application.ExternalApi.Queries.DownloadMovies;
 using MoviesApp.Application.Movies.Commands.CreateMovie;
 using MoviesApp.Application.Movies.Commands.DeleteMovie;
+using MoviesApp.Application.Movies.Commands.SaveDownloadMovies;
 using MoviesApp.Application.Movies.Commands.UpdateMovie;
 using MoviesApp.Application.Movies.Queries.GetAll;
 using MoviesApp.Application.Movies.Queries.GetMovieById;
@@ -49,6 +51,16 @@ namespace MoviesApp.API.Controllers
         public async Task<ActionResult> RemoveMovie([FromRoute] int id)
         {
             await _mediator.Send(new DeleteMovieCommand(id));
+            return NoContent();
+        }
+
+        [HttpGet("/Download")]
+        public async Task<ActionResult> Download()
+        {
+            var newMovies = await _mediator.Send(new DownloadMoviesQuery());
+
+            await _mediator.Send(new SaveDownloadMoviesCommand(newMovies));
+
             return NoContent();
         }
     }

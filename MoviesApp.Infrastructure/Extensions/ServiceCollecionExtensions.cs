@@ -38,6 +38,9 @@ namespace MoviesApp.Infrastructure.Extensions
 
             services.AddMemoryCache();
 
+            services.AddHttpClient();
+
+            services.AddTransient<IExternalApiRepository, ExternalApiRepository>();
             services.AddTransient<IMoviesRepository, MoviesRepository>();
         }
     }
