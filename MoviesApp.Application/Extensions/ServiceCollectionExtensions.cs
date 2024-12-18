@@ -23,6 +23,8 @@ namespace MoviesApp.Application.Extensions
             services.AddValidatorsFromAssemblyContaining<CreateMovieCommandValidator>()
                 .AddFluentValidationAutoValidation()
                 .AddFluentValidationClientsideAdapters();
+
+            services.AddScoped<ErrorHandlingMiddleware>();
         }
 
         public static void AddMiddlewares(this IApplicationBuilder app)
