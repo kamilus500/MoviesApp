@@ -54,8 +54,8 @@ namespace MoviesApp.API.Controllers
             return NoContent();
         }
 
-        [HttpGet("/Download")]
-        public async Task<ActionResult> Download()
+        [HttpGet("/DownloadAndSave")]
+        public async Task<ActionResult> DownloadAndSave()
         {
             var newMovies = await _mediator.Send(new DownloadMoviesQuery());
 

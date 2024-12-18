@@ -26,7 +26,7 @@ export default {
       return apiClient.delete(`/Remove/${movieId}`);
     },
 
-    async download() {
-      return apiClient.get('/Download');
+    async downloadAndSave() {
+      return apiClient.get('/DownloadAndSave');
     }
 };

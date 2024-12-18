@@ -100,7 +100,7 @@ export default {
       
     async downloadNewMovies() {
       try {
-        await MovieService.download();
+        await MovieService.downloadAndSave();
         await this.fetchMovies();
       } catch (error) {
         console.log('Error when download new movies', error);
