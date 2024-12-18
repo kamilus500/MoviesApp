@@ -1,5 +1,5 @@
 <template>
-  <h1 class="title">Movies's list</h1>
+  <h1 class="title">My Movies</h1>
   <Movies/>
 </template>
 
