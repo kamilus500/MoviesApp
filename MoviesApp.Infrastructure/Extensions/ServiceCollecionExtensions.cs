@@ -14,6 +14,7 @@ namespace MoviesApp.Infrastructure.Extensions
         public static void AddInfrastructure(this IServiceCollection services, IConfiguration configuration, ConfigureHostBuilder host)
         {
             var connectionString = configuration.GetConnectionString("connectionString") ?? throw new ArgumentNullException("Connection string is empty");
+            var frontEndUrl = configuration.GetSection("Frontend").GetValue<string>("Url") ?? throw new ArgumentNullException("Frontend url is empty");
 
             Log.Logger = new LoggerConfiguration()
                 .ReadFrom.Configuration(configuration)
@@ -30,7 +31,7 @@ namespace MoviesApp.Infrastructure.Extensions
             {
                 options.AddPolicy("DevPolicy", builder =>
                 {
-                    builder.WithOrigins("http://localhost:8080")
+                    builder.WithOrigins(frontEndUrl)
                            .AllowAnyHeader()
                            .AllowAnyMethod();
                 });
