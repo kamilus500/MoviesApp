@@ -22,7 +22,7 @@
           <td>{{ movie.year }}</td>
           <td>{{ movie.rate }}</td>
           <td>
-            <button class="btn btn-primary">Edit</button>
+            <button @click="openEditDialog(movie.id)" class="btn btn-primary">Edit</button>
           </td>
           <td>
             <button @click="openRemoveDialog(movie.id)" class="btn btn-danger">Delete</button>
@@ -44,33 +44,45 @@
   <dialog v-if="isCreateDialogOpen" class="dialog-backdrop">
       <div class="dialog">
         <div class="close-button">
-          <button @click="closeCreateDialog" class="btn btn-danger">Close</button>
+          <button @click="closeCreateDialog" class="btn btn-danger">X</button>
         </div>
         <CreateMovie @close-createDialog="closeCreateDialog"></CreateMovie>
+      </div>
+  </dialog>
+
+  <dialog v-if="isEditDialogOpen" class="dialog-backdrop">
+      <div class="dialog">
+        <div class="close-button">
+          <button @click="closeEditDialog" class="btn btn-danger">X</button>
+        </div>
+        <EditMovie :movieId="this.selectedMovieId" @close-editDialog="closeEditDialog"></EditMovie>
       </div>
   </dialog>
 
 </template>
 
 <script>
-import axios from 'axios';
 import CreateMovie from './CreateMovie.vue';
+import EditMovie from './EditMovie.vue';
+import MovieService from '@/services/MovieService';
 
 export default {
   name: 'MoviesTable',
   components: {
-    CreateMovie
+    CreateMovie,
+    EditMovie
   },
   data() {
     return {
       selectedMovieId: 0,
       isDeleteDialogOpen: false,
+      isEditDialogOpen: false,
       isCreateDialogOpen: false,
       movies:  [],
     };
   },
-  created() {
-    this.fetchMovies();
+  async created() {
+    await this.fetchMovies();
   },
   methods: {
     openCreateDialog() {
@@ -87,16 +99,24 @@ export default {
     closeRemoveDialog() {
       this.isDeleteDialogOpen = false;
     },
+    openEditDialog(movieId) {
+      this.selectedMovieId = movieId;
+      this.isEditDialogOpen = true;
+    },
+    async closeEditDialog() {
+      this.isEditDialogOpen = false;
+      await this.fetchMovies();
+    },
     async confirmAction() {
       this.$emit('actionConfirmed');
-      await axios.delete(`https://localhost:7216/Remove/${this.selectedMovieId}`);
+      await MovieService.delete(this.selectedMovieId);
       await this.fetchMovies();
       this.closeRemoveDialog();
     },
       
     async downloadNewMovies() {
       try {
-        await axios.get(`https://localhost:7216/Download`);
+        await MovieService.download();
         await this.fetchMovies();
       } catch (error) {
         console.log('Error when download new movies', error);
@@ -105,7 +125,7 @@ export default {
 
     async fetchMovies() {
       try {
-        const response = await axios.get('https://localhost:7216/Movies');
+        const response = await MovieService.getAll();
         this.movies = response.data;
       } catch (error) {
         console.error('Error when downloading movies:', error);

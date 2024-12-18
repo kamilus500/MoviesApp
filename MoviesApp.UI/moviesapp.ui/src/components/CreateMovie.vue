@@ -2,30 +2,23 @@
   <h1>Create Movie</h1>
   <form @submit.prevent="handleSubmit">
     <div class="field-container">
-      
       <label for="title">Title:</label>
       <input v-model="form.title" type="text" id="title" placeholder="Insert title">
-      
       <span v-if="v$.title.$error">{{ v$.title.$errors[0].$message }}</span>
     </div>
     <div class="field-container">
-      
       <label for="director">Director:</label>
       <input v-model="form.director" type="text" id="director" placeholder="Insert director">
-      
       <span v-if="v$.director.$error">{{ v$.director.$errors[0].$message }}</span>
     </div>
     <div class="field-container">
-      
       <label for="year">Year:</label>
       <input v-model="form.year" type="number" id="year" placeholder="Insert year">
-      
       <span v-if="v$.year.$error">{{ v$.year.$errors[0].$message }}</span>
     </div>
     <div class="field-container">
       <label for="rate">Rate</label>
       <input v-model="form.rate" type="number" placeholder="Insert rate">
-      
       <span v-if="v$.rate.$error">{{ v$.rate.$errors[0].$message }}</span>
     </div>
     
@@ -37,7 +30,7 @@
 import { reactive, computed } from 'vue'
 import { useVuelidate } from '@vuelidate/core'
 import { required } from '@vuelidate/validators'
-import axios from 'axios';
+import MovieService from '@/services/MovieService';
 
 export default {
   setup(_, {emit}) {
@@ -65,10 +58,6 @@ export default {
 
     const v$ = useVuelidate(rules, form)
 
-    const create = async (movie) => {
-      await axios.post('https://localhost:7216/Create', movie);
-    }
-
     const handleSubmit = async () => {
       
       const result = v$.value.$validate()
@@ -76,7 +65,7 @@ export default {
         return
       }
 
-      await create({
+      await MovieService.create({
         id: 0,
         title: form.title,
         year: form.year,
