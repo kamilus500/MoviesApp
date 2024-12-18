@@ -58,15 +58,12 @@ export default {
           maxLength: maxLength(200)
         },
         director: {
-          required,
         },
         year: {
           required,
           between: between(1900, 2200)
         },
         rate: {
-          required,
-          between: between(1,10)
         }
       }
     })
