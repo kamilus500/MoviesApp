@@ -2,7 +2,7 @@
   <div class="container">
     <div class="container-buttons">
       <button @click="downloadNewMovies" class="btn btn-success">Download</button>
-      <button @click="openCreateDialog" class="btn btn-warning">Create</button>
+      <button @click="openDialog(0)" class="btn btn-warning">Create</button>
     </div>
     <table v-if="movies.length > 0" class="table table-striped table-bordered">
       <thead class="table-dark">
@@ -22,7 +22,7 @@
           <td>{{ movie.year }}</td>
           <td>{{ movie.rate }}</td>
           <td>
-            <button @click="openEditDialog(movie.id)" class="btn btn-primary">Edit</button>
+            <button @click="openDialog(movie.id, 'edit')" class="btn btn-primary">Edit</button>
           </td>
           <td>
             <button @click="openRemoveDialog(movie.id)" class="btn btn-danger">Delete</button>
@@ -41,43 +41,32 @@
       </div>
   </div>
 
-  <dialog v-if="isCreateDialogOpen" class="dialog-backdrop">
+  <dialog v-if="isCreateEditDialogOpen" class="dialog-backdrop">
       <div class="dialog">
         <div class="close-button">
-          <button @click="closeCreateDialog" class="btn btn-danger">X</button>
+          <button @click="closeDialog" class="btn btn-danger">X</button>
         </div>
-        <CreateMovie @close-createDialog="closeCreateDialog"></CreateMovie>
-      </div>
-  </dialog>
-
-  <dialog v-if="isEditDialogOpen" class="dialog-backdrop">
-      <div class="dialog">
-        <div class="close-button">
-          <button @click="closeEditDialog" class="btn btn-danger">X</button>
-        </div>
-        <EditMovie :movieId="this.selectedMovieId" @close-editDialog="closeEditDialog"></EditMovie>
+        <CreateEditMovie @close-Dialog="closeDialog" :mode="this.mode" :movieId="this.selectedMovieId"></CreateEditMovie>
       </div>
   </dialog>
 
 </template>
 
 <script>
-import CreateMovie from './CreateMovie.vue';
-import EditMovie from './EditMovie.vue';
+import CreateEditMovie from './CreateEditMovie.vue';
 import MovieService from '@/services/MovieService';
 
 export default {
   name: 'MoviesTable',
   components: {
-    CreateMovie,
-    EditMovie
+    CreateEditMovie
   },
   data() {
     return {
       selectedMovieId: 0,
       isDeleteDialogOpen: false,
-      isEditDialogOpen: false,
-      isCreateDialogOpen: false,
+      isCreateEditDialogOpen: false,
+      mode: '',
       movies:  [],
     };
   },
@@ -85,11 +74,13 @@ export default {
     await this.fetchMovies();
   },
   methods: {
-    openCreateDialog() {
-      this.isCreateDialogOpen = true;
+    openDialog(movieId, mode) {
+      this.mode = mode;
+      this.selectedMovieId = movieId;
+      this.isCreateEditDialogOpen = true;
     },
-    async closeCreateDialog() {
-      this.isCreateDialogOpen = false;
+    async closeDialog() {
+      this.isCreateEditDialogOpen = false;
       await this.fetchMovies();
     },
     openRemoveDialog(movieId) {
@@ -98,14 +89,7 @@ export default {
     },
     closeRemoveDialog() {
       this.isDeleteDialogOpen = false;
-    },
-    openEditDialog(movieId) {
-      this.selectedMovieId = movieId;
-      this.isEditDialogOpen = true;
-    },
-    async closeEditDialog() {
-      this.isEditDialogOpen = false;
-      await this.fetchMovies();
+      this.selectedMovieId = 0;
     },
     async confirmAction() {
       this.$emit('actionConfirmed');

@@ -22,18 +22,28 @@
       <span class="text-center" v-if="v$.rate.$error">{{ v$.rate.$errors[0].$message }}</span>
     </div>
     
-    <button class="btn btn-primary" type="submit">Create</button>
+    <button class="btn btn-primary" type="submit">Save</button>
   </form>
 </template>
 
 <script>
-import { reactive, computed } from 'vue'
+import { reactive, computed, onMounted } from 'vue'
 import { useVuelidate } from '@vuelidate/core'
 import { maxLength ,between, required } from '@vuelidate/validators'
 import MovieService from '@/services/MovieService';
 
 export default {
-  setup(_, {emit}) {
+  props: {
+      movieId: {
+        type: Number,
+        required
+      },
+      mode: {
+        type: String,
+        required
+      }
+    },
+  setup(props, {emit}) {
     const form = reactive({
       title: '',
       director: '',
@@ -61,6 +71,19 @@ export default {
       }
     })
 
+    const fetchMovie = async () => {
+        try {
+          const response = await MovieService.getById(props.movieId);
+          const movie = response.data;
+          form.title = movie.title;
+          form.director = movie.director;
+          form.year = movie.year;
+          form.rate = movie.rate;
+        } catch (error) {
+          console.error('Error fetching movie:', error);
+        }
+      };
+
     const v$ = useVuelidate(rules, form, { $autoDirty: true })
 
     const handleSubmit = async () => {
@@ -70,15 +93,29 @@ export default {
         return
       }
 
-      await MovieService.create({
+      if (props.mode == 'edit') {
+        await MovieService.update({
+          id: props.movieId,
+          title: form.title,
+          director: form.director,
+          year: form.year,
+          rate: form.rate
+        });
+      } else {
+        await MovieService.create({
         id: 0,
         title: form.title,
         year: form.year,
         director: form.director,
         rate: form.rate
-      });
+        }); 
+      }
 
-      emit('close-createDialog');
+      emit('close-Dialog');
+    }
+
+    if (props.mode == "edit") {
+      onMounted(fetchMovie);
     }
 
     return {
