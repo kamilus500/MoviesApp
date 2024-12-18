@@ -25,6 +25,7 @@ namespace MoviesApp.Application.Movies.Commands.UpdateMovie
             await _moviesRepository.Update(updateMovie, cancellationToken);
 
             _memoryCache.Remove(CacheItemKeys.allMoviesKey);
+            _memoryCache.Remove($"{CacheItemKeys.movieByIdKey}_{request.Id}");
 
             return updateMovie;
         }
