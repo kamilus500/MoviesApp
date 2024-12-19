@@ -31,6 +31,7 @@ import { reactive, computed, onMounted } from 'vue'
 import { useVuelidate } from '@vuelidate/core'
 import { maxLength ,between, required } from '@vuelidate/validators'
 import MovieService from '@/services/MovieService';
+import ToastService from '@/services/ToastService';
 
 export default {
   props: {
@@ -77,7 +78,8 @@ export default {
           form.year = movie.year;
           form.rate = movie.rate;
         } catch (error) {
-          console.error('Error fetching movie:', error);
+          console.error(`Error fetching movie with Id ${props.movieId}:`, error);
+          ToastService.showError(error);
         }
       };
 
@@ -90,22 +92,27 @@ export default {
         return
       }
 
-      if (props.mode == 'edit') {
-        await MovieService.update({
-          id: props.movieId,
+      try {
+        if (props.mode == 'edit') {
+          await MovieService.update({
+            id: props.movieId,
+            title: form.title,
+            director: form.director,
+            year: form.year,
+            rate: form.rate
+          });
+        } else {
+          await MovieService.create({
+          id: 0,
           title: form.title,
-          director: form.director,
           year: form.year,
+          director: form.director,
           rate: form.rate
-        });
-      } else {
-        await MovieService.create({
-        id: 0,
-        title: form.title,
-        year: form.year,
-        director: form.director,
-        rate: form.rate
-        }); 
+          }); 
+        }
+      } catch(error) {
+        console.error('Error when downloading movies:', error);
+        ToastService.showError(error);
       }
 
       emit('close-Dialog');

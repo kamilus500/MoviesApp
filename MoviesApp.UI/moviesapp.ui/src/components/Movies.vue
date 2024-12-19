@@ -56,6 +56,7 @@
 <script>
 import CreateEditMovie from './CreateEditMovie.vue';
 import MovieService from '@/services/MovieService';
+import ToastService from '@/services/ToastService';
 import LoadingSpinner from './LoadingSpinner.vue';
 
 export default {
@@ -100,10 +101,16 @@ export default {
     },
 
     async confirmAction() {
-      this.$emit('actionConfirmed');
-      await MovieService.delete(this.selectedMovieId);
-      await this.fetchMovies();
-      this.closeRemoveDialog();
+      try{
+        this.$emit('actionConfirmed');
+        await MovieService.delete(this.selectedMovieId);
+        await this.fetchMovies();
+        this.closeRemoveDialog();
+      }
+      catch (error) {
+        console.log(`Error when deleting movie with id ${this.selectedMovieId}`, error);
+        ToastService.showError(error);
+      }
     },
       
     async downloadNewMovies() {
@@ -113,6 +120,7 @@ export default {
         await this.fetchMovies();
       } catch (error) {
         console.log('Error when download new movies', error);
+        ToastService.showError(error);
       } finally {
         this.isLoading = false;
       }
@@ -125,6 +133,7 @@ export default {
         this.movies = response.data;
       } catch (error) {
         console.error('Error when downloading movies:', error);
+        ToastService.showError(error);
       } finally {
         this.isLoading = false;
       }
