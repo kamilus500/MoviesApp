@@ -1,4 +1,5 @@
 <template>
+  <LoadingSpinner :isVisible="isLoading" />
   <div class="container">
     <div class="container-buttons">
       <button @click="downloadNewMovies" class="btn btn-success">Download</button>
@@ -55,17 +56,20 @@
 <script>
 import CreateEditMovie from './CreateEditMovie.vue';
 import MovieService from '@/services/MovieService';
+import LoadingSpinner from './LoadingSpinner.vue';
 
 export default {
   name: 'MoviesTable',
   components: {
-    CreateEditMovie
+    CreateEditMovie,
+    LoadingSpinner
   },
   data() {
     return {
       selectedMovieId: 0,
       isDeleteDialogOpen: false,
       isCreateEditDialogOpen: false,
+      isLoading: false,
       mode: '',
       movies:  [],
     };
@@ -79,18 +83,22 @@ export default {
       this.selectedMovieId = movieId;
       this.isCreateEditDialogOpen = true;
     },
+
     async closeDialog() {
       this.isCreateEditDialogOpen = false;
       await this.fetchMovies();
     },
+
     openRemoveDialog(movieId) {
       this.selectedMovieId = movieId;
       this.isDeleteDialogOpen = true;
     },
+
     closeRemoveDialog() {
       this.isDeleteDialogOpen = false;
       this.selectedMovieId = 0;
     },
+
     async confirmAction() {
       this.$emit('actionConfirmed');
       await MovieService.delete(this.selectedMovieId);
@@ -100,19 +108,25 @@ export default {
       
     async downloadNewMovies() {
       try {
+        this.isLoading = true;
         await MovieService.downloadAndSave();
         await this.fetchMovies();
       } catch (error) {
         console.log('Error when download new movies', error);
+      } finally {
+        this.isLoading = false;
       }
     },
 
     async fetchMovies() {
       try {
+        this.isLoading = true;
         const response = await MovieService.getAll();
         this.movies = response.data;
       } catch (error) {
         console.error('Error when downloading movies:', error);
+      } finally {
+        this.isLoading = false;
       }
     },
   },
