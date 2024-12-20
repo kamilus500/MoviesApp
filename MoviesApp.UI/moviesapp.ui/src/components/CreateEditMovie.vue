@@ -67,6 +67,7 @@ export default {
           between: between(1900, 2200)
         },
         rate: {
+          between: between(1, 10)
         }
       }
     })
