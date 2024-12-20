@@ -2,6 +2,7 @@
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Logging;
 using MoviesApp.Domain.Interfaces;
+using MoviesApp.Infrastructure.Global;
 
 namespace MoviesApp.Application.Movies.Commands.SaveDownloadMovies
 {
@@ -30,6 +31,8 @@ namespace MoviesApp.Application.Movies.Commands.SaveDownloadMovies
                 movie.Id = 0;
                 await _moviesRepository.Create(movie, cancellationToken);
             }
+
+            _memoryCache.Remove(CacheItemKeys.allMoviesKey);
         }
     }
 }

@@ -1,5 +1,5 @@
 <template>
-  <h1>Create Movie</h1>
+  <h1>{{ formHeader }}</h1>
   <form @submit.prevent="handleSubmit">
     <div class="field-container">
       <label for="title">Title:</label>
@@ -45,6 +45,8 @@ export default {
       }
     },
   setup(props, {emit}) {
+    let formHeader = props.mode === 'edit' ? 'Edit movie' : 'Create movie';
+
     const form = reactive({
       title: '',
       director: '',
@@ -123,6 +125,7 @@ export default {
     }
 
     return {
+      formHeader,
       form,
       v$,
       handleSubmit
