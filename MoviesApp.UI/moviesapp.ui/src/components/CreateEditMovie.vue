@@ -103,11 +103,11 @@ export default {
           });
         } else {
           await MovieService.create({
-          id: 0,
-          title: form.title,
-          year: form.year,
-          director: form.director,
-          rate: form.rate
+            id: 0,
+            title: form.title,
+            year: form.year,
+            director: form.director,
+            rate: form.rate
           }); 
         }
       } catch(error) {
