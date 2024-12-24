@@ -8,8 +8,12 @@ namespace MoviesApp.Application.Movies.Commands.SaveDownloadMovies
 {
     public class SaveDownloadMoviesCommandHandler : BaseHandler<SaveDownloadMoviesCommandHandler>, IRequestHandler<SaveDownloadMoviesCommand>
     {
-        public SaveDownloadMoviesCommandHandler(IMoviesRepository moviesRepository, IMemoryCache memoryCache, ILogger<SaveDownloadMoviesCommandHandler> logger) : base(moviesRepository, memoryCache, logger)
+        private readonly IMoviesRepository _moviesRepository;
+        public SaveDownloadMoviesCommandHandler(IMoviesRepository moviesRepository, 
+            IMemoryCache memoryCache, 
+            ILogger<SaveDownloadMoviesCommandHandler> logger) : base(memoryCache, logger)
         {
+            _moviesRepository = moviesRepository ?? throw new ArgumentNullException(nameof(moviesRepository));
         }
 
         public async Task Handle(SaveDownloadMoviesCommand request, CancellationToken cancellationToken)

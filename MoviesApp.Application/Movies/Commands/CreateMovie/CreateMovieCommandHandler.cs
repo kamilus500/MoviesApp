@@ -10,10 +10,12 @@ namespace MoviesApp.Application.Movies.Commands.CreateMovie
 {
     public class CreateMovieCommandHandler : BaseHandler<CreateMovieCommandHandler>, IRequestHandler<CreateMovieCommand, Movie>
     {
+        private readonly IMoviesRepository _moviesRepository;
         public CreateMovieCommandHandler(IMoviesRepository moviesRepository, 
             IMemoryCache memoryCache, 
-            ILogger<CreateMovieCommandHandler> logger) : base(moviesRepository, memoryCache, logger)
+            ILogger<CreateMovieCommandHandler> logger) : base(memoryCache, logger)
         {
+            _moviesRepository = moviesRepository ?? throw new ArgumentNullException(nameof(moviesRepository));
         }
 
         public async Task<Movie> Handle(CreateMovieCommand request, CancellationToken cancellationToken)

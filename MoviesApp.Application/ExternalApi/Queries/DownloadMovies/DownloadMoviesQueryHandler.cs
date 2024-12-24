@@ -11,9 +11,8 @@ namespace MoviesApp.Application.ExternalApi.Queries.DownloadMovies
     {
         private readonly IExternalApiRepository _externalApiRepository;
         public DownloadMoviesQueryHandler(IExternalApiRepository externalApiRepository,
-            IMoviesRepository moviesRepository,
             IMemoryCache memoryCache,
-            ILogger<DownloadMoviesQueryHandler> logger) : base(moviesRepository, memoryCache, logger)
+            ILogger<DownloadMoviesQueryHandler> logger) : base(memoryCache, logger)
         {
             _externalApiRepository = externalApiRepository ?? throw new ArgumentNullException(nameof(externalApiRepository));
         }

@@ -9,10 +9,12 @@ namespace MoviesApp.Application.Movies.Queries.GetMovieById
 {
     public class GetMovieByIdQueryHandler : BaseHandler<GetMovieByIdQueryHandler> ,IRequestHandler<GetMovieByIdQuery, Movie>
     {
+        private readonly IMoviesRepository _moviesRepository;
         public GetMovieByIdQueryHandler(IMoviesRepository moviesRepository, 
             IMemoryCache memoryCache, 
-            ILogger<GetMovieByIdQueryHandler> logger) : base(moviesRepository, memoryCache, logger)
+            ILogger<GetMovieByIdQueryHandler> logger) : base(memoryCache, logger)
         {
+            _moviesRepository = moviesRepository ?? throw new ArgumentNullException(nameof(moviesRepository));
         }
 
         public async Task<Movie> Handle(GetMovieByIdQuery request, CancellationToken cancellationToken)

@@ -42,6 +42,7 @@ namespace MoviesApp.Infrastructure.Extensions
             services.AddHttpClient();
 
             services.AddTransient<IExternalApiRepository, ExternalApiRepository>();
+            services.AddTransient<IHealthCheckRepository, HealthCheckRepository>();
             services.AddTransient<IMoviesRepository, MoviesRepository>();
         }
     }
