@@ -30,8 +30,7 @@
 import { reactive, computed, onMounted } from 'vue'
 import { useVuelidate } from '@vuelidate/core'
 import { maxLength ,between, required } from '@vuelidate/validators'
-import MovieService from '@/services/MovieService';
-import ToastService from '@/services/ToastService';
+import MovieHandler from '@/handlers/MovieHandler';
 
 export default {
   props: {
@@ -73,52 +72,34 @@ export default {
     })
 
     const fetchMovie = async () => {
-        try {
-          const response = await MovieService.getById(props.movieId);
-          const movie = response.data;
-          form.title = movie.title;
-          form.director = movie.director;
-          form.year = movie.year;
-          form.rate = movie.rate;
-        } catch (error) {
-          console.error(`Error fetching movie with Id ${props.movieId}:`, error);
-          ToastService.showError(error);
-        }
-      };
+      const movie = await MovieHandler.getById(props.movieId);
+      form.title = movie.title;
+      form.director = movie.director;
+      form.year = movie.year;
+      form.rate = movie.rate;
+    };
 
     const v$ = useVuelidate(rules, form, { $autoDirty: true })
 
     const handleSubmit = async () => {
-      
       const isValid = await v$.value.$validate()
       if (!isValid) {
         return
       }
 
-      try {
-        if (props.mode == 'edit') {
-          await MovieService.update({
-            id: props.movieId,
-            title: form.title,
-            director: form.director,
-            year: form.year,
-            rate: form.rate
-          });
-        } else {
-          await MovieService.create({
-            id: 0,
-            title: form.title,
-            year: form.year,
-            director: form.director,
-            rate: form.rate
-          }); 
-        }
-      } catch(error) {
-        console.error('Error when downloading movies:', error);
-        ToastService.showError(error);
-      }
+      const movie = {
+        id: props.movieId,
+        title: form.title,
+        director: form.director,
+        year: form.year,
+        rate: form.rate
+      };
+
+      await MovieHandler.createOrUpdate(movie, props.mode);
 
       emit('close-Dialog');
+
+      emit('refresh-Data');
     }
 
     if (props.mode == "edit") {

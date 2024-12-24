@@ -47,7 +47,7 @@
         <div class="close-button">
           <button @click="closeDialog" class="btn btn-danger">X</button>
         </div>
-        <CreateEditMovie @close-Dialog="closeDialog" :mode="this.mode" :movieId="this.selectedMovieId"></CreateEditMovie>
+        <CreateEditMovie @close-Dialog="closeDialog" @refresh-Data="refreshData" :mode="this.mode" :movieId="this.selectedMovieId"></CreateEditMovie>
       </div>
   </dialog>
 
@@ -55,9 +55,8 @@
 
 <script>
 import CreateEditMovie from './CreateEditMovie.vue';
-import MovieService from '@/services/MovieService';
-import ToastService from '@/services/ToastService';
 import LoadingSpinner from './LoadingSpinner.vue';
+import MovieHandler from '@/handlers/MovieHandler';
 
 export default {
   name: 'MoviesTable',
@@ -76,7 +75,7 @@ export default {
     };
   },
   async created() {
-    await this.fetchMovies();
+    this.movies = await MovieHandler.getAll();
   },
   methods: {
     openDialog(movieId, mode) {
@@ -85,9 +84,8 @@ export default {
       this.isCreateEditDialogOpen = true;
     },
 
-    async closeDialog() {
+    closeDialog() {
       this.isCreateEditDialogOpen = false;
-      await this.fetchMovies();
     },
 
     openRemoveDialog(movieId) {
@@ -100,44 +98,21 @@ export default {
       this.selectedMovieId = 0;
     },
 
+    async refreshData() {
+      this.movies = await MovieHandler.getAll();
+    },
+
     async confirmAction() {
-      try{
-        this.$emit('actionConfirmed');
-        await MovieService.delete(this.selectedMovieId);
-        await this.fetchMovies();
-        this.closeRemoveDialog();
-      }
-      catch (error) {
-        console.log(`Error when deleting movie with id ${this.selectedMovieId}`, error);
-        ToastService.showError(error);
-      }
+      this.$emit('actionConfirmed');
+      this.movies = await MovieHandler.delete(this.selectedMovieId);
+      this.closeRemoveDialog();
     },
       
     async downloadNewMovies() {
-      try {
-        this.isLoading = true;
-        await MovieService.downloadAndSave();
-        await this.fetchMovies();
-      } catch (error) {
-        console.log('Error when download new movies', error);
-        ToastService.showError(error);
-      } finally {
-        this.isLoading = false;
-      }
-    },
-
-    async fetchMovies() {
-      try {
-        this.isLoading = true;
-        const response = await MovieService.getAll();
-        this.movies = response.data;
-      } catch (error) {
-        console.error('Error when downloading movies:', error);
-        ToastService.showError(error);
-      } finally {
-        this.isLoading = false;
-      }
-    },
+      this.isLoading = true;
+      this.movies = await MovieHandler.downloadAndSave();
+      this.isLoading = false;
+    }
   },
 };
 </script>
