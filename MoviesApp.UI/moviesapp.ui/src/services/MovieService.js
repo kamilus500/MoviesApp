@@ -1,31 +1,31 @@
-import axios from 'axios';
-
-const apiClient = axios.create({
-  baseURL: process.env.VUE_APP_API_URL
-});
+let _apiClient;
 
 export default {
+    init(apiClient) {
+      _apiClient = apiClient;
+    },
+
     async getAll() {
-      return apiClient.get('/Movies');
+      return _apiClient.get('/Movies');
     },
   
     async getById(id) {
-      return apiClient.get(`/Movie/${id}`);
+      return _apiClient.get(`/Movie/${id}`);
     },
   
     async create(movie) {
-      return apiClient.post('/Create', movie);
+      return _apiClient.post('/Create', movie);
     },
   
     async update(movie) {
-      return apiClient.put(`/Update`, movie);
+      return _apiClient.put(`/Update`, movie);
     },
       
     async delete(movieId) {
-      return apiClient.delete(`/Remove/${movieId}`);
+      return _apiClient.delete(`/Remove/${movieId}`);
     },
 
     async downloadAndSave() {
-      return apiClient.get('/DownloadAndSave');
+      return _apiClient.get('/DownloadAndSave');
     }
 };

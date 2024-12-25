@@ -1,11 +1,10 @@
-const apiClient = axios.create({
-    baseURL: process.env.VUE_APP_API_URL
-  });
-  
-import axios from "axios";
+let _apiClient;
 
 export default {
+    init(apiClient) {
+        _apiClient = apiClient;
+    },
     async checkApi() {
-        return await apiClient.get('/check');
+        return await _apiClient.get('/check');
     }
 }
