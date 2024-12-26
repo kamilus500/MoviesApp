@@ -31,7 +31,6 @@
         </tr>
       </tbody>
     </table>
-    <p v-else>Loading data...</p>
   </div>
 
   <div v-if="isDeleteDialogOpen" class="dialog-backdrop">
@@ -57,7 +56,6 @@
 import CreateEditMovie from './CreateEditMovie.vue';
 import LoadingSpinner from './LoadingSpinner.vue';
 import MovieHandler from '@/handlers/MovieHandler';
-import HealthCheckHandler from '@/handlers/HealthCheckHandler';
 
 export default {
   name: 'MoviesTable',
@@ -76,9 +74,7 @@ export default {
     };
   },
   async created() {
-    if (await HealthCheckHandler.check()) {
-      this.movies = await MovieHandler.getAll();
-    }
+    this.movies = await MovieHandler.getAll();
   },
   methods: {
     openDialog(movieId, mode) {
