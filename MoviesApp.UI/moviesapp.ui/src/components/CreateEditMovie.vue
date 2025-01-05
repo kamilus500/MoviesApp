@@ -18,7 +18,7 @@
     </div>
     <div class="field-container">
       <label for="rate">Rate</label>
-      <input v-model="form.rate" type="number" placeholder="Insert rate">
+      <input v-model="form.rate" type="number" step="0.1" min="1.0" max="10.0" placeholder="Insert rate">
       <span class="text-center" v-if="v$.rate.$error">{{ v$.rate.$errors[0].$message }}</span>
     </div>
     
@@ -50,7 +50,7 @@ export default {
       title: '',
       director: '',
       year: 0,
-      rate: 0
+      rate: 0.0
     })
 
     const rules = computed(() => {
@@ -66,7 +66,7 @@ export default {
           between: between(1900, 2200)
         },
         rate: {
-          between: between(1, 10)
+          between: between(1.0, 10.0)
         }
       }
     })

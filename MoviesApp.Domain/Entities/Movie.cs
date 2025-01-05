@@ -6,6 +6,6 @@
         public string Title { get; set; }
         public string Director { get; set; }
         public int Year { get; set; }
-        public int Rate { get; set; }
+        public decimal Rate { get; set; }
     }
 }
